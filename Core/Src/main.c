@@ -58,6 +58,26 @@ typedef StaticSemaphore_t osStaticMutexDef_t;
 #define ALIGN_FLOOR(addr, type) (((uint32_t)(addr)) & ~(uint32_t)(sizeof(type)-1))
 #define ALIGN_CEIL(addr, type)   ALIGN_FLOOR((uint32_t)(addr) + sizeof(type) - 1, type)
 
+extern const unsigned char image_screen_1[];
+extern const int image_screen_1_size;
+
+// 串口发送函数
+PUTCHAR_PROTOTYPE
+{
+    HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+    return ch;
+}
+
+
+void send_image_to_serial(const unsigned char *image, int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        // 发送每个字节的数据
+        PUTCHAR(image[i]);
+    }
+}
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -523,6 +543,7 @@ int main(void)
 
   /* Start scheduler */
   osKernelStart();
+	
 
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
@@ -532,6 +553,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+		    // 发送图像数据到串口
+    send_image_to_serial(image_screen_1, image_screen_1_size);
 	}
   /* USER CODE END 3 */
 }
